@@ -45,6 +45,7 @@ using System.Reflection;
 
 using Moq.Language;
 using Moq.Language.Flow;
+using Moq.Performance;
 using Moq.Properties;
 
 namespace Moq
@@ -86,6 +87,14 @@ namespace Moq
 		public IVerifies Raises(Action<TMock> eventExpression, params object[] args)
 		{
 			return this.RaisesImpl(eventExpression, args);
+		}
+
+		public new event EventHandler Invoked;
+
+		public IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext)
+		{
+			performanceContext.AddTo(this, 500);
+			return this;
 		}
 
 		public IReturnsResult<TMock> Returns(Delegate valueFunction)
@@ -241,6 +250,8 @@ namespace Moq
 			{
 				invocation.Return(default(TResult));
 			}
+
+			Invoked?.Invoke(this, null);
 
 			this.afterReturnCallback?.Invoke(invocation.Arguments);
 		}

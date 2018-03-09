@@ -1,4 +1,5 @@
 ﻿using System;
+using Moq.Performance;
 using Xunit;
 
 namespace Moq.Tests
@@ -32,16 +33,18 @@ namespace Moq.Tests
 			//setup - data
 			var order = new Order(TALISKER, 50);
 			var mock = new Mock<IWarehouse>();
-
+			var performanceContext = new PerformanceContext();
+			
 			//setup - expectations
-			mock.Setup(x => x.HasInventory(It.IsAny<string>(), It.IsInRange(0, 100, Range.Inclusive))).Returns(false);
+			mock.Setup(x => x.HasInventory(It.IsAny<string>(), It.IsInRange(0, 100, Range.Inclusive))).With(performanceContext).Returns(false);
 			mock.Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<int>())).Throws(new InvalidOperationException());
 
 			//exercise
-			order.Fill(mock.Object);
+			performanceContext.Run(() => order.Fill(mock.Object));
 
 			//verify
 			Assert.False(order.IsFilled);
+			Assert.True(performanceContext.TimeTaken < 750);
 		}
 
 		[Fact]

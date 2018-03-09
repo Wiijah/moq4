@@ -1,146 +1,129 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
-		<AssemblyName>Moq</AssemblyName>
-		<AssemblyOriginatorKeyFile>../Moq.snk</AssemblyOriginatorKeyFile>
-		<DebugSymbols>True</DebugSymbols>
-		<DebugType>full</DebugType>
-		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile> 
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<GenerateDocumentation>true</GenerateDocumentation>
-		<GitIgnoreTagVersion>true</GitIgnoreTagVersion>
-		<GitIgnoreBranchVersion>true</GitIgnoreBranchVersion>
-		<NoWarn>0419</NoWarn>
-		<PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
-		<RootNamespace>Moq</RootNamespace>
-		<SignAssembly>true</SignAssembly>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningLevel>4</WarningLevel>
-	</PropertyGroup>
-
-	<PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
-		<DefineConstants>$(DefineConstants);DESKTOP;FEATURE_CAS;FEATURE_CODEDOM;FEATURE_COM;FEATURE_SERIALIZATION</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-		<DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Castle.Core" Version="4.2.1" />
-		<PackageReference Include="GitInfo" Version="1.1.14" />
-		<PackageReference Include="IFluentInterface" Version="2.0.0" />
-		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.2.1" PrivateAssets="All" />
-		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
-		<PackageReference Include="System.ValueTuple" Version="4.3.0" />
-		<DotNetCliToolReference Include="dotnet-sourcelink" Version="2.2.1" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-		<Reference Include="System" />
-		<Reference Include="System.Core" />
-		<Reference Include="System.Xml" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-		<PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
-		<PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Update="Properties\Resources.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<SubType>Designer</SubType>
-			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-		<Compile Update="Properties\Resources.Designer.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Resources.resx</DependentUpon>
-		</Compile>
-
-		<None Update="Includes\GenericTypeParameters.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-		</None>
-
-		<None Update="Language\ICallback.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>ICallback.Generated.cs</LastGenOutput>
-		</None>
-		<Compile Update="Language\ICallback.Generated.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>ICallback.tt</DependentUpon>
-		</Compile>
-
-		<None Update="Language\IRaise.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>IRaise.Generated.cs</LastGenOutput>
-		</None>
-		<Compile Update="Language\IRaise.Generated.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>IRaise.tt</DependentUpon>
-		</Compile>
-
-		<None Update="Language\IReturns.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>IReturns.Generated.cs</LastGenOutput>
-		</None>
-		<Compile Update="Language\IReturns.Generated.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>IReturns.tt</DependentUpon>
-		</Compile>
-
-		<None Update="It.xdoc">
-			<DependentUpon>It.cs</DependentUpon>
-		</None>
-
-		<None Update="MethodCall.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>MethodCall.Generated.cs</LastGenOutput>
-		</None>
-		<Compile Update="MethodCall.Generated.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>MethodCall.tt</DependentUpon>
-		</Compile>
-
-		<None Update="MethodCallReturn.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>MethodCallReturn.Generated.cs</LastGenOutput>
-		</None>
-		<Compile Update="MethodCallReturn.Generated.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>MethodCallReturn.tt</DependentUpon>
-		</Compile>
-
-		<None Update="Match.xdoc">
-			<DependentUpon>Match.cs</DependentUpon>
-		</None>
-
-		<None Update="Mock.Generic.xdoc">
-			<DependentUpon>Mock.Generic.cs</DependentUpon>
-			<SubType>Designer</SubType>
-		</None>
-
-		<None Update="Mock.xdoc">
-			<DependentUpon>Mock.cs</DependentUpon>
-		</None>
-
-		<None Update="ReturnsExtensions.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>ReturnsExtensions.Generated.cs</LastGenOutput>
-		</None>
-		<Compile Update="ReturnsExtensions.Generated.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>ReturnsExtensions.tt</DependentUpon>
-		</Compile>
-
-		<None Update="Times.xdoc">
-			<DependentUpon>Times.cs</DependentUpon>
-		</None>
-	</ItemGroup>
-
+  <PropertyGroup>
+    <TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
+    <AssemblyName>Moq</AssemblyName>
+    <AssemblyOriginatorKeyFile>../Moq.snk</AssemblyOriginatorKeyFile>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <GitIgnoreTagVersion>true</GitIgnoreTagVersion>
+    <GitIgnoreBranchVersion>true</GitIgnoreBranchVersion>
+    <NoWarn>0419</NoWarn>
+    <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
+    <RootNamespace>Moq</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);DESKTOP;FEATURE_CAS;FEATURE_CODEDOM;FEATURE_COM;FEATURE_SERIALIZATION</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.2.1" />
+    <PackageReference Include="GitInfo" Version="1.1.14" />
+    <PackageReference Include="IFluentInterface" Version="2.0.0" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.2.1" PrivateAssets="All" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+    <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.2.1" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Update="Includes\GenericTypeParameters.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Language\ICallback.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ICallback.Generated.cs</LastGenOutput>
+    </None>
+    <Compile Update="Language\ICallback.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ICallback.tt</DependentUpon>
+    </Compile>
+    <None Update="Language\IRaise.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IRaise.Generated.cs</LastGenOutput>
+    </None>
+    <Compile Update="Language\IRaise.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IRaise.tt</DependentUpon>
+    </Compile>
+    <None Update="Language\IReturns.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IReturns.Generated.cs</LastGenOutput>
+    </None>
+    <Compile Update="Language\IReturns.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IReturns.tt</DependentUpon>
+    </Compile>
+    <None Update="It.xdoc">
+      <DependentUpon>It.cs</DependentUpon>
+    </None>
+    <None Update="MethodCall.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MethodCall.Generated.cs</LastGenOutput>
+    </None>
+    <Compile Update="MethodCall.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MethodCall.tt</DependentUpon>
+    </Compile>
+    <None Update="MethodCallReturn.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MethodCallReturn.Generated.cs</LastGenOutput>
+    </None>
+    <Compile Update="MethodCallReturn.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MethodCallReturn.tt</DependentUpon>
+    </Compile>
+    <None Update="Match.xdoc">
+      <DependentUpon>Match.cs</DependentUpon>
+    </None>
+    <None Update="Mock.Generic.xdoc">
+      <DependentUpon>Mock.Generic.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Mock.xdoc">
+      <DependentUpon>Mock.cs</DependentUpon>
+    </None>
+    <None Update="ReturnsExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ReturnsExtensions.Generated.cs</LastGenOutput>
+    </None>
+    <Compile Update="ReturnsExtensions.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReturnsExtensions.tt</DependentUpon>
+    </Compile>
+    <None Update="Times.xdoc">
+      <DependentUpon>Times.cs</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>
