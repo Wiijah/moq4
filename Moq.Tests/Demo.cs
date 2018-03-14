@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Moq.Performance;
 using Xunit;
 
@@ -36,15 +37,15 @@ namespace Moq.Tests
 			var performanceContext = new PerformanceContext();
 			
 			//setup - expectations
-			mock.Setup(x => x.HasInventory(It.IsAny<string>(), It.IsInRange(0, 100, Range.Inclusive))).With(performanceContext).Returns(false);
+			mock.Setup(x => x.HasInventory(It.IsAny<string>(), It.IsInRange(0, 100, Range.Inclusive))).With(performanceContext, new ConstantPerformanceModel(500)).Returns(false);
 			mock.Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<int>())).Throws(new InvalidOperationException());
 
 			//exercise
-			performanceContext.Run(() => order.Fill(mock.Object));
+			performanceContext.Run(() => order.Fill(mock.Object), 100);
 
 			//verify
 			Assert.False(order.IsFilled);
-			Assert.True(performanceContext.TimeTaken < 750);
+			Assert.True(performanceContext.TimeTaken < 610, $"Expected performance less than 610ms, but got average performance: {performanceContext.TimeTaken}");
 		}
 
 		[Fact]
@@ -110,6 +111,7 @@ namespace Moq.Tests
 
 			public void Fill(IWarehouse warehouse)
 			{
+				Thread.Sleep(100);
 				if (warehouse.HasInventory(ProductName, Quantity))
 				{
 					warehouse.Remove(ProductName, Quantity);

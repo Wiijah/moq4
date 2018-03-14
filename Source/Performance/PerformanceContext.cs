@@ -11,11 +11,15 @@ namespace Moq.Performance
 	{
 		private Stopwatch timer;
 		private long virtualTime = 0;
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
-		public long TimeTaken => timer.ElapsedMilliseconds + virtualTime;
+		public long TimeTaken
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// 
@@ -34,6 +38,28 @@ namespace Moq.Performance
 			timer.Start();
 			performanceTest.Invoke();
 			timer.Stop();
+
+			TimeTaken = timer.ElapsedMilliseconds + virtualTime;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="performanceTest"></param>
+		/// <param name="number"></param>
+		/// <exception cref="NotImplementedException"></exception>
+		public void Run(Action performanceTest, int number)
+		{
+			long average = 0;
+			for (int i = 0; i < number; i++)
+			{
+				timer.Reset();
+				virtualTime = 0;
+				Run(performanceTest);
+				average += TimeTaken;
+			}
+
+			this.TimeTaken = average / number;
 		}
 
 		/// <summary>
@@ -43,7 +69,27 @@ namespace Moq.Performance
 		/// <param name="timeTaken"></param>
 		public void AddTo(IWith setup, long timeTaken)
 		{
-			setup.Invoked += (_, __) => { virtualTime += timeTaken; };
+			setup.StartInvocation += (_, __) => { timer.Stop(); };
+			setup.EndInvocation += (_, __) =>
+			{
+				virtualTime += timeTaken;
+				timer.Start();
+			};
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="setup"></param>
+		/// <param name="model"></param>
+		public void AddTo(IWith setup, IPerformanceModel model)
+		{
+			setup.StartInvocation += (_, __) => { timer.Stop(); };
+			setup.EndInvocation += (_, __) =>
+			{
+				virtualTime += model.DrawTime();
+				timer.Start();
+			};
 		}
 
 	}

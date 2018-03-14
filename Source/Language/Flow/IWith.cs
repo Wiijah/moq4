@@ -11,7 +11,12 @@ namespace Moq.Language.Flow
 		/// <summary>
 		/// 
 		/// </summary>
-		event EventHandler Invoked;
+		event EventHandler StartInvocation;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		event EventHandler EndInvocation;
 	}
 	
 	/// <summary>
@@ -22,12 +27,20 @@ namespace Moq.Language.Flow
 	public interface IWith<TMock, TResult> : IWith
 		where TMock : class
 	{
-		
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="performanceContext"></param>
+		/// <param name="time"></param>
 		/// <returns></returns>
-		IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext);
+		IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext, long time);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="performanceContext"></param>
+		/// <param name="moodel"></param>
+		/// <returns></returns>
+		IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext, IPerformanceModel moodel);
 	}
 }

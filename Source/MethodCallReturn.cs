@@ -89,11 +89,18 @@ namespace Moq
 			return this.RaisesImpl(eventExpression, args);
 		}
 
-		public new event EventHandler Invoked;
+		public event EventHandler StartInvocation;
+		public event EventHandler EndInvocation;
 
-		public IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext)
+		public IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext, long time)
 		{
-			performanceContext.AddTo(this, 500);
+			performanceContext.AddTo(this, time);
+			return this;
+		}
+		
+		public IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext, IPerformanceModel model)
+		{
+			performanceContext.AddTo(this, model);
 			return this;
 		}
 
@@ -230,6 +237,7 @@ namespace Moq
 
 		public override void Execute(Invocation invocation)
 		{
+			this.StartInvocation?.Invoke(this, null);
 			base.Execute(invocation);
 
 			if (this.returnValueKind == ReturnValueKind.CallBase)
@@ -251,8 +259,7 @@ namespace Moq
 				invocation.Return(default(TResult));
 			}
 
-			Invoked?.Invoke(this, null);
-
+			this.EndInvocation?.Invoke(this, null);
 			this.afterReturnCallback?.Invoke(invocation.Arguments);
 		}
 	}
