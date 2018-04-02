@@ -9,6 +9,6 @@
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		long DrawTime();
+		double DrawTime();
 	}
 }

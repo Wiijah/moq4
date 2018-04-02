@@ -87,7 +87,7 @@ namespace Moq.Performance
 			setup.StartInvocation += (_, __) => { timer.Stop(); };
 			setup.EndInvocation += (_, __) =>
 			{
-				virtualTime += model.DrawTime();
+				virtualTime += (long) model.DrawTime();
 				timer.Start();
 			};
 		}

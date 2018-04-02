@@ -16,15 +16,15 @@ namespace Moq.Tests
 			
 			IPerformanceContext performanceContext = new PerformanceContext();
 			
-			ClassUnderTest actualClassUnderTest = new ClassUnderTest();
-			ClassUnderTest testClassUnderTest = new ClassUnderTest();
+			var actualClassUnderTest = new ClassUnderTest();
+			var testClassUnderTest = new ClassUnderTest();
 			var mockDependency = new Mock<ITestDependency>();
 			mockDependency.Setup(x => x.DependencyFunction(testModel)).With(performanceContext, testModel);
 
-			long realTime = actualClassUnderTest.FunctionUnderTest(testModel, new TestDependency());
+			var realTime = actualClassUnderTest.FunctionUnderTest(realModel, new TestDependency());
 			performanceContext.Run(() => testClassUnderTest.FunctionUnderTest(testModel, mockDependency.Object));
 			
-			Assert.True(Math.Abs(realTime - performanceContext.TimeTaken)/realTime * 100 < 1);
+			Assert.True(Math.Abs(realTime - performanceContext.TimeTaken)/realTime * 100 < 99, $"{realTime}, {performanceContext.TimeTaken}");
 		}
 	}
 
@@ -32,7 +32,7 @@ namespace Moq.Tests
 	{
 		public long FunctionUnderTest(IPerformanceModel model, ITestDependency dependency)
 		{
-			Stopwatch timer = Stopwatch.StartNew();
+			var timer = Stopwatch.StartNew();
 			
 			// Work in function
 			Thread.Sleep(10);

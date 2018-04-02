@@ -20,7 +20,7 @@
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public long DrawTime()
+		public double DrawTime()
 		{
 			return constantTime;
 		}
