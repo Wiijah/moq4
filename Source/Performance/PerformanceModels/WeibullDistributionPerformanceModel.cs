@@ -1,6 +1,6 @@
-﻿using MathNet.Numerics.Distributions;
+﻿using System;
 
-namespace Moq.Performance
+namespace Moq.Performance.PerformanceModels
 {
 	/// <summary>
 	/// 
@@ -25,16 +25,16 @@ namespace Moq.Performance
 		{
 			this.Shape = shape;
 			this.Scale = scale;
-			
-			this.weibull = new Weibull(Shape, Scale);
+
+			this.random = new Random();
 		}
 
 		/// <inheritdoc />
 		public double DrawTime()
 		{
-			return this.weibull.Sample();
+			return Scale * Math.Pow(-Math.Log(random.NextDouble()), 1.0 / Shape);
 		}
-
-		private readonly Weibull weibull;
+		
+		private readonly Random random;
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace Moq.Performance
+﻿namespace Moq.Performance.PerformanceModels
 {
 	/// <summary>
 	/// 

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using Moq.Performance;
+using Moq.Performance.PerformanceModels;
 using Xunit;
 
 namespace Moq.Tests

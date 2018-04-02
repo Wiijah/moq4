@@ -126,4 +126,7 @@
       <DependentUpon>Times.cs</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Performance\PerformanceModel" />
+  </ItemGroup>
 </Project>

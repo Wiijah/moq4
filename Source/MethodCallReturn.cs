@@ -46,6 +46,7 @@ using System.Reflection;
 using Moq.Language;
 using Moq.Language.Flow;
 using Moq.Performance;
+using Moq.Performance.PerformanceModels;
 using Moq.Properties;
 
 namespace Moq

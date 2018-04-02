@@ -1,5 +1,6 @@
 ﻿using System;
 using Moq.Performance;
+using Moq.Performance.PerformanceModels;
 
 namespace Moq.Language.Flow
 {

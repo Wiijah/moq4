@@ -1,6 +1,7 @@
 ﻿using System;
-using MathNet.Numerics.Distributions;
+using System.Linq;
 using Moq.Performance;
+using Moq.Performance.PerformanceModels;
 using Xunit;
 
 namespace Moq.Tests
@@ -84,19 +85,117 @@ namespace Moq.Tests
 		[Fact]
 		public void WeibullSamplingFits()
 		{
-			double shape = 10;
-			double scale = 1;
+			double scale = 10;
+			double shape = 1;
 			var weibull = new WeibullDistributionPerformanceModel(shape, scale);
+			
+			var samples = new long[1000];
 
-			var samples = new double[1000];
 			for (int i = 0; i < samples.Length; i++)
 			{
-				samples[i] = weibull.DrawTime();
+				var res = weibull.DrawTime();
+
+				samples[i] = (long) Math.Round(res - 0.5, MidpointRounding.AwayFromZero);
 			}
 
-			var estimateWeibull = Weibull.Estimate(samples);
-			Assert.True((Math.Abs(shape - estimateWeibull.Shape)/shape) * 100 < 1, $"Expected shape: {shape}, but got: {estimateWeibull.Shape}");
-			Assert.True((Math.Abs(scale - estimateWeibull.Scale)/scale) * 100 < 1, $"Expected scale: {scale}, but got: {estimateWeibull.Scale}");
+			var buckets = new int[20];
+			var bucketsExpected = new double[20];
+			foreach (var sample in samples)
+			{
+				if (sample < 0 || sample >= 20) continue;
+				buckets[sample]++;
+			}
+
+			for (int i = 0; i < buckets.Length; i++)
+			{
+				bucketsExpected[i] = (WeibullCdf(i + 1, scale, shape) - WeibullCdf(i, scale, shape)) * 1000;
+			}
+
+			var chi_squared = buckets.Select((bucketCount, i) => Math.Pow(bucketCount - bucketsExpected[i], 2) / bucketsExpected[i]).Sum();
+
+			Assert.True(chi_squared < 30.144, $"Assumed chi-squared less than: {30.144}, but was {chi_squared}");
+		}
+
+		[Fact]
+		public void CauchySamplingFits()
+		{
+			var location = 10;
+			var scale = 0.5;
+			var cauchy = new CauchyDistributionPerformanceModel(location, scale);
+
+			var samples = new long[1000];
+			
+			for (int i = 0; i < samples.Length; i++)
+			{
+				var res = cauchy.DrawTime();
+
+				samples[i] = (long) Math.Round(res - 0.5, MidpointRounding.AwayFromZero);
+			}
+
+			var buckets = new int[20];
+			var bucketsExpected = new double[20];
+			foreach (var sample in samples)
+			{
+				if (sample < 0 || sample >= 20) continue;
+				buckets[sample]++;
+			}
+
+			for (int i = 0; i < buckets.Length; i++)
+			{
+				bucketsExpected[i] = (CauchyCdf(i + 1, location, scale) - CauchyCdf(i, location, scale)) * 1000;
+			}
+
+			var chi_squared = buckets.Select((bucketCount, i) => Math.Pow(bucketCount - bucketsExpected[i], 2) / bucketsExpected[i]).Sum();
+
+			Assert.True(chi_squared < 30.144, $"Assumed chi-squared less than: {30.144}, but was {chi_squared}");
+		}
+		
+		[Fact]
+		public void ExponentialSamplingFits()
+		{
+			double rate = 0.5;
+			var exponential = new ExponentialDistributionPerformanceModel(rate);
+
+			var samples = new long[1000];
+			
+			for (int i = 0; i < samples.Length; i++)
+			{
+				var res = exponential.DrawTime();
+
+				samples[i] = (long) Math.Round(res - 0.5, MidpointRounding.AwayFromZero);
+			}
+
+			var buckets = new int[20];
+			var bucketsExpected = new double[20];
+			foreach (var sample in samples)
+			{
+				if (sample < 0 || sample >= 20) continue;
+				buckets[sample]++;
+			}
+
+			for (int i = 0; i < buckets.Length; i++)
+			{
+				bucketsExpected[i] = (ExponentialCdf(i + 1, rate) - ExponentialCdf(i, rate)) * 1000;
+			}
+
+			var chi_squared = buckets.Select((bucketCount, i) => Math.Pow(bucketCount - bucketsExpected[i], 2) / bucketsExpected[i]).Sum();
+
+			Assert.True(chi_squared < 30.144, $"Assumed chi-squared less than: {30.144}, but was {chi_squared}");
+		}
+
+		private double ExponentialCdf(long x, double rate)
+		{
+			return x < 0 ? 0 : 1 - Math.Exp(-rate * x);
+		}
+		
+		private double CauchyCdf(long x, double location, double scale)
+		{
+			return 1 / Math.PI * Math.Atan((x - location) / scale) + 1 / 2;
+		}
+
+		private double WeibullCdf(long x, double scale, double shape)
+		{
+			return 1 - Math.Exp(-Math.Pow(x / scale, shape));
 		}
 
 		private Tuple<double, double> estimateNormalParameters(double[] samples)
