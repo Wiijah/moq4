@@ -34,7 +34,7 @@ namespace Moq.Tests.Performance
 			performanceContext.Run(() => testClassUnderTest.FunctionUnderTest(testModel, mockDependency.Object));
 
 			output.WriteLine(performanceContext.TimelineVisualisation());
-			Assert.True(Math.Abs(realTime - performanceContext.TimeTaken)/realTime * 100 < 0, $"{realTime}, {performanceContext.TimeTaken}");
+			Assert.True(Math.Abs(realTime - performanceContext.TimeTaken)/realTime * 100 < 5, $"{realTime}, {performanceContext.TimeTaken}");
 		}
 	}
 
