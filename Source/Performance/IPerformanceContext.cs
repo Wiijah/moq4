@@ -35,6 +35,12 @@ namespace Moq.Performance
 		/// <param name="setup"></param>
 		/// <param name="model"></param>
 		void AddTo(IWith setup, IPerformanceModel model);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		string TimeRankingVisualisation();
 		
 		/// <summary>
 		/// 

@@ -4,15 +4,23 @@ using System.Threading;
 using Moq.Performance;
 using Moq.Performance.PerformanceModels;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace Moq.Tests
+namespace Moq.Tests.Performance
 {
 	public class PerformanceTest
 	{
+		private ITestOutputHelper output;
+
+		public PerformanceTest(ITestOutputHelper output)
+		{
+			this.output = output;
+		}
+		
 		[Fact]
 		public void PerformanceMatchesReality()
 		{
-			IPerformanceModel testModel = new ConstantPerformanceModel(500);
+			IPerformanceModel testModel = new ConstantPerformanceModel(100);
 			IPerformanceModel realModel = new ConstantPerformanceModel(100);
 			
 			IPerformanceContext performanceContext = new PerformanceContext();
@@ -24,8 +32,9 @@ namespace Moq.Tests
 
 			var realTime = actualClassUnderTest.FunctionUnderTest(realModel, new TestDependency());
 			performanceContext.Run(() => testClassUnderTest.FunctionUnderTest(testModel, mockDependency.Object));
-			
-			Assert.True(Math.Abs(realTime - performanceContext.TimeTaken)/realTime * 100 < 99, $"{realTime}, {performanceContext.TimeTaken}");
+
+			output.WriteLine(performanceContext.TimeRankingVisualisation());
+			Assert.True(Math.Abs(realTime - performanceContext.TimeTaken)/realTime * 100 < 5, $"{realTime}, {performanceContext.TimeTaken}");
 		}
 	}
 

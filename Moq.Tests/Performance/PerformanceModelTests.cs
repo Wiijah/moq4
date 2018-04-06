@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Moq.Performance;
 using Moq.Performance.PerformanceModels;
 using Xunit;
 
-namespace Moq.Tests
+namespace Moq.Tests.Performance
 {
 	public class PerformanceModelTests
 	{
@@ -78,8 +77,8 @@ namespace Moq.Tests
 
 			var estimates = estimateNormalParameters(samples);
 			
-			Assert.True((Math.Abs(estimates.Item1 - logScale)/logScale) * 100 < 2, $"Expected logScale: {logScale}, but got: {estimates.Item1}");
-			Assert.True((Math.Abs(estimates.Item2 - shape)/shape) * 100 < 2, $"Expected shape: {shape}, but got {estimates.Item2}");
+			Assert.True((Math.Abs(estimates.Item1 - logScale)/logScale) * 100 < 5, $"Expected logScale: {logScale}, but got: {estimates.Item1}");
+			Assert.True((Math.Abs(estimates.Item2 - shape)/shape) * 100 < 5, $"Expected shape: {shape}, but got {estimates.Item2}");
 		}
 
 		[Fact]

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Moq.Language.Flow;
 using Moq.Performance.PerformanceModels;
+using Moq.Performance.Visualisation;
+using Moq.Performance.Visualisation.Visualisers;
 
 namespace Moq.Performance
 {
@@ -10,24 +13,18 @@ namespace Moq.Performance
 	/// </summary>
 	public class PerformanceContext : IPerformanceContext
 	{
-		private Stopwatch timer;
-		private long virtualTime = 0;
-
 		/// <summary>
 		/// 
 		/// </summary>
-		public long TimeTaken
-		{
-			get;
-			private set;
-		}
+		public long TimeTaken { get; private set; }
 
 		/// <summary>
 		/// 
 		/// </summary>
 		public PerformanceContext()
 		{
-			timer = new Stopwatch();
+			eventRepository = new EventRepository();
+			rankingVisualiser = new TimeRankingVisualiser(eventRepository);
 		}
 		
 		/// <summary>
@@ -36,7 +33,7 @@ namespace Moq.Performance
 		/// <param name="performanceTest"></param>
 		public void Run(Action performanceTest)
 		{
-			timer.Start();
+			timer = Stopwatch.StartNew();
 			performanceTest.Invoke();
 			timer.Stop();
 
@@ -54,7 +51,7 @@ namespace Moq.Performance
 			long average = 0;
 			for (int i = 0; i < number; i++)
 			{
-				timer.Reset();
+				timer = Stopwatch.StartNew();
 				virtualTime = 0;
 				Run(performanceTest);
 				average += TimeTaken;
@@ -88,10 +85,23 @@ namespace Moq.Performance
 			setup.StartInvocation += (_, __) => { timer.Stop(); };
 			setup.EndInvocation += (_, __) =>
 			{
-				virtualTime += (long) model.DrawTime();
+				if (timer.IsRunning) timer.Stop();
+				var time = model.DrawTime();
+				virtualTime += (long) time;
+				eventRepository.AddEvent(new SetupCalledEvent(new DateTime(), setup, new TimeSpan(0, 0, 0, 0, (int) time)));
 				timer.Start();
 			};
 		}
 
+		/// <inheritdoc />
+		public string TimeRankingVisualisation()
+		{
+			return rankingVisualiser.Visualise();
+		}
+
+		private Stopwatch timer;
+		private long virtualTime = 0;
+		private IEventRepository eventRepository;
+		private TimeRankingVisualiser rankingVisualiser;
 	}
 }
