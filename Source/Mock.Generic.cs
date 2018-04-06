@@ -55,12 +55,13 @@ using Microsoft.CSharp;
 
 using Moq.Language;
 using Moq.Language.Flow;
+using Moq.Performance;
 
 namespace Moq
 {
 	/// <include file='Mock.Generic.xdoc' path='docs/doc[@for="Mock{T}"]/*'/>
 	public partial class Mock<T> : Mock, IMock<T> where T : class
-	{
+	{	
 		private static Type[] inheritedInterfaces;
 		private static int serialNumberCounter;
 
@@ -153,6 +154,16 @@ namespace Moq
 			this.switches = Switches.Default;
 
 			this.CheckParameters();
+		}
+
+		/// <summary>
+		/// </summary>
+		/// <param name="performanceContext"></param>
+		/// <param name="behavior"></param>
+		public Mock(IPerformanceContext performanceContext, MockBehavior behavior)
+			: this(behavior, new object[0])
+		{
+			this.PerformanceContext = performanceContext;
 		}
 
 		private static string CreateUniqueDefaultMockName()

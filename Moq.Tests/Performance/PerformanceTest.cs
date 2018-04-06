@@ -20,21 +20,21 @@ namespace Moq.Tests.Performance
 		[Fact]
 		public void PerformanceMatchesReality()
 		{
-			IPerformanceModel testModel = new ConstantPerformanceModel(100);
-			IPerformanceModel realModel = new ConstantPerformanceModel(100);
+			IPerformanceModel testModel = new ConstantPerformanceModel(1000);
+			IPerformanceModel realModel = new ConstantPerformanceModel(1000);
 			
 			IPerformanceContext performanceContext = new PerformanceContext();
 			
 			var actualClassUnderTest = new ClassUnderTest();
 			var testClassUnderTest = new ClassUnderTest();
-			var mockDependency = new Mock<ITestDependency>();
-			mockDependency.Setup(x => x.DependencyFunction(testModel)).With(performanceContext, testModel);
+			var mockDependency = new Mock<ITestDependency>(performanceContext, MockBehavior.Default);
+			mockDependency.Setup(x => x.DependencyFunction(testModel)).With(testModel);
 
 			var realTime = actualClassUnderTest.FunctionUnderTest(realModel, new TestDependency());
 			performanceContext.Run(() => testClassUnderTest.FunctionUnderTest(testModel, mockDependency.Object));
 
-			output.WriteLine(performanceContext.TimeRankingVisualisation());
-			Assert.True(Math.Abs(realTime - performanceContext.TimeTaken)/realTime * 100 < 5, $"{realTime}, {performanceContext.TimeTaken}");
+			output.WriteLine(performanceContext.TimelineVisualisation());
+			Assert.True(Math.Abs(realTime - performanceContext.TimeTaken)/realTime * 100 < 0, $"{realTime}, {performanceContext.TimeTaken}");
 		}
 	}
 
@@ -48,6 +48,7 @@ namespace Moq.Tests.Performance
 			Thread.Sleep(10);
 			
 			// Work in dependency
+			dependency.DependencyFunction(model);
 			dependency.DependencyFunction(model);
 			
 			return timer.ElapsedMilliseconds;

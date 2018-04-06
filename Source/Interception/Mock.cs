@@ -53,6 +53,7 @@ namespace Moq
 
 		void IInterceptor.Intercept(Invocation invocation)
 		{
+			this.PerformanceContext?.StopTimer();
 			foreach (var aspect in aspects)
 			{
 				if (aspect.Handle(invocation, this) == InterceptionAction.Stop)
@@ -60,6 +61,8 @@ namespace Moq
 					break;
 				}
 			}
+
+			this.PerformanceContext?.StartTimer();
 		}
 	}
 }

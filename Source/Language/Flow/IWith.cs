@@ -18,6 +18,11 @@ namespace Moq.Language.Flow
 		/// 
 		/// </summary>
 		event EventHandler EndInvocation;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void StartPerfInvocation();
 	}
 	
 	/// <summary>
@@ -31,17 +36,15 @@ namespace Moq.Language.Flow
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="performanceContext"></param>
 		/// <param name="time"></param>
 		/// <returns></returns>
-		IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext, long time);
+		IReturnsThrows<TMock, TResult> With(long time);
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="performanceContext"></param>
 		/// <param name="moodel"></param>
 		/// <returns></returns>
-		IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext, IPerformanceModel moodel);
+		IReturnsThrows<TMock, TResult> With(IPerformanceModel moodel);
 	}
 }

@@ -38,7 +38,7 @@ namespace Moq.Tests
 			var performanceContext = new PerformanceContext();
 			
 			//setup - expectations
-			mock.Setup(x => x.HasInventory(It.IsAny<string>(), It.IsInRange(0, 100, Range.Inclusive))).With(performanceContext, new ConstantPerformanceModel(500)).Returns(false);
+			mock.Setup(x => x.HasInventory(It.IsAny<string>(), It.IsInRange(0, 100, Range.Inclusive))).With(new ConstantPerformanceModel(500)).Returns(false);
 			mock.Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<int>())).Throws(new InvalidOperationException());
 
 			//exercise

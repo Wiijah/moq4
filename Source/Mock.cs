@@ -52,6 +52,7 @@ using System.Threading.Tasks;
 
 using Moq.Diagnostics.Errors;
 using Moq.Language.Flow;
+using Moq.Performance;
 using Moq.Properties;
 
 namespace Moq
@@ -59,6 +60,11 @@ namespace Moq
 	/// <include file='Mock.xdoc' path='docs/doc[@for="Mock"]/*'/>
 	public abstract partial class Mock : IFluentInterface
 	{
+		/// <summary>
+		/// 
+		/// </summary>
+		protected internal IPerformanceContext PerformanceContext { get; set; }
+
 		/// <include file='Mock.xdoc' path='docs/doc[@for="Mock.ctor"]/*'/>
 		protected Mock()
 		{

@@ -31,5 +31,11 @@ namespace Moq.Performance.Visualisation
 			this.Setup = setup;
 			this.Duration = duration;
 		}
+
+		/// <inheritdoc />
+		public override string ToString()
+		{
+			return Setup.ToString();
+		}
 	}
 }

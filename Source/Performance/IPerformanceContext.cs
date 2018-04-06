@@ -41,6 +41,22 @@ namespace Moq.Performance
 		/// </summary>
 		/// <returns></returns>
 		string TimeRankingVisualisation();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		string TimelineVisualisation();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void StopTimer();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void StartTimer();
 		
 		/// <summary>
 		/// 

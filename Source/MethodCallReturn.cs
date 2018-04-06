@@ -93,15 +93,20 @@ namespace Moq
 		public event EventHandler StartInvocation;
 		public event EventHandler EndInvocation;
 
-		public IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext, long time)
+		public void StartPerfInvocation()
 		{
-			performanceContext.AddTo(this, time);
+			this.StartInvocation?.Invoke(this, null);
+		}
+
+		public IReturnsThrows<TMock, TResult> With(long time)
+		{
+			this.Mock.PerformanceContext.AddTo(this, time);
 			return this;
 		}
 		
-		public IReturnsThrows<TMock, TResult> With(IPerformanceContext performanceContext, IPerformanceModel model)
+		public IReturnsThrows<TMock, TResult> With(IPerformanceModel model)
 		{
-			performanceContext.AddTo(this, model);
+			this.Mock.PerformanceContext.AddTo(this, model);
 			return this;
 		}
 
@@ -260,8 +265,8 @@ namespace Moq
 				invocation.Return(default(TResult));
 			}
 
-			this.EndInvocation?.Invoke(this, null);
 			this.afterReturnCallback?.Invoke(invocation.Arguments);
+			this.EndInvocation?.Invoke(this, null);
 		}
 	}
 }
