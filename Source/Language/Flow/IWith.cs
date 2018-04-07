@@ -18,11 +18,6 @@ namespace Moq.Language.Flow
 		/// 
 		/// </summary>
 		event EventHandler EndInvocation;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		void StartPerfInvocation();
 	}
 	
 	/// <summary>
@@ -38,13 +33,33 @@ namespace Moq.Language.Flow
 		/// </summary>
 		/// <param name="time"></param>
 		/// <returns></returns>
-		IReturnsThrows<TMock, TResult> With(long time);
+		IReturnsThrows<TMock, TResult> With(TimeSpan time);
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="moodel"></param>
+		/// <param name="model"></param>
 		/// <returns></returns>
-		IReturnsThrows<TMock, TResult> With(IPerformanceModel moodel);
+		IReturnsThrows<TMock, TResult> With(IPerformanceModel model);
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <typeparam name="TMock"></typeparam>
+	public interface IWith<TMock> : IWith
+		where TMock : class
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="time"></param>
+		void With(TimeSpan time);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="model"></param>
+		void With(IPerformanceModel model);
 	}
 }

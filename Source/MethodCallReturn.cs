@@ -90,15 +90,10 @@ namespace Moq
 			return this.RaisesImpl(eventExpression, args);
 		}
 
-		public event EventHandler StartInvocation;
-		public event EventHandler EndInvocation;
+		public new event EventHandler StartInvocation;
+		public new event EventHandler EndInvocation;
 
-		public void StartPerfInvocation()
-		{
-			this.StartInvocation?.Invoke(this, null);
-		}
-
-		public IReturnsThrows<TMock, TResult> With(long time)
+		public IReturnsThrows<TMock, TResult> With(TimeSpan time)
 		{
 			this.Mock.PerformanceContext.AddTo(this, time);
 			return this;

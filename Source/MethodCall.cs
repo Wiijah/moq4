@@ -52,6 +52,7 @@ using System.Text;
 using Moq.Language;
 using Moq.Language.Flow;
 using Moq.Matchers;
+using Moq.Performance.PerformanceModels;
 using Moq.Properties;
 
 namespace Moq
@@ -79,6 +80,16 @@ namespace Moq
 		{
 			return RaisesImpl(eventExpression, args);
 		}
+		
+		public void With(TimeSpan time)
+		{
+			this.Mock.PerformanceContext?.AddTo(this, time);
+		}
+
+		public void With(IPerformanceModel model)
+		{
+			this.Mock.PerformanceContext?.AddTo(this, model);
+		}
 	}
 
 	internal partial class MethodCall : ICallbackResult, IVerifies, IThrowsResult
@@ -101,6 +112,9 @@ namespace Moq
 		private RaiseEventResponse raiseEventResponse;
 		private Exception throwExceptionResponse;
 		private bool verifiable;
+
+		public event EventHandler StartInvocation;
+		public event EventHandler EndInvocation;
 
 		/// <remarks>
 		///   Only use this constructor when you know that the specified <paramref name="method"/> has no `out` parameters,
@@ -288,6 +302,7 @@ namespace Moq
 
 		public virtual void Execute(Invocation invocation)
 		{
+			this.StartInvocation?.Invoke(this, null);
 			++this.callCount;
 
 			if (expectedMaxCallCount.HasValue && this.callCount > expectedMaxCallCount)
@@ -314,6 +329,8 @@ namespace Moq
 			{
 				throw this.throwExceptionResponse;
 			}
+			
+			this.EndInvocation?.Invoke(this, null);
 		}
 
 		public IThrowsResult Throws(Exception exception)

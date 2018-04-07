@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Moq.Language.Flow;
 using Moq.Performance.PerformanceModels;
 using Moq.Performance.Visualisation;
@@ -16,7 +18,7 @@ namespace Moq.Performance
 		/// <summary>
 		/// 
 		/// </summary>
-		public long TimeTaken { get; private set; }
+		public TimeSpan TimeTaken { get; private set; }
 
 		/// <summary>
 		/// 
@@ -39,7 +41,7 @@ namespace Moq.Performance
 			performanceTest.Invoke();
 			timer?.Stop();
 
-			TimeTaken = timer.ElapsedMilliseconds + virtualTime;
+			TimeTaken = timer.Elapsed + virtualTime;
 		}
 
 		/// <summary>
@@ -50,16 +52,16 @@ namespace Moq.Performance
 		/// <exception cref="NotImplementedException"></exception>
 		public void Run(Action performanceTest, int number)
 		{
-			long average = 0;
+			IList<TimeSpan> times = new List<TimeSpan>();
 			for (int i = 0; i < number; i++)
 			{
 				timer.Reset();
-				virtualTime = 0;
+				virtualTime = new TimeSpan(0);
 				Run(performanceTest);
-				average += TimeTaken;
+				times.Add(TimeTaken);
 			}
 
-			this.TimeTaken = average / number;
+			this.TimeTaken = new TimeSpan(Convert.ToInt64(times.Average(timeSpan => timeSpan.Ticks)));
 		}
 
 		/// <summary>
@@ -67,7 +69,7 @@ namespace Moq.Performance
 		/// </summary>
 		/// <param name="setup"></param>
 		/// <param name="timeTaken"></param>
-		public void AddTo(IWith setup, long timeTaken)
+		public void AddTo(IWith setup, TimeSpan timeTaken)
 		{
 			setup.StartInvocation += (_, __) =>
 			{
@@ -79,9 +81,9 @@ namespace Moq.Performance
 				
 				eventRepository.AddEvent(
 					new SetupCalledEvent(
-						DateTime.Now + new TimeSpan(0, 0, 0, 0, (int) virtualTime), 
+						DateTime.Now + virtualTime, 
 						setup, 
-						new TimeSpan(0, 0, 0, 0, (int) timeTaken)));
+						timeTaken));
 			};
 		}
 
@@ -101,11 +103,11 @@ namespace Moq.Performance
 				if (timer.IsRunning) timer.Stop();
 				
 				var time = model.DrawTime();
-				virtualTime += (long) time;
+				virtualTime += new TimeSpan(0, 0, 0, 0, (int) time);
 				
 				eventRepository.AddEvent(
 					new SetupCalledEvent(
-						DateTime.Now + new TimeSpan(0, 0, 0, 0, (int) virtualTime), 
+						DateTime.Now + virtualTime, 
 						setup, 
 						new TimeSpan(0, 0, 0, 0, (int) time)));
 			};
@@ -136,7 +138,7 @@ namespace Moq.Performance
 		} 
 
 		private Stopwatch timer;
-		private long virtualTime = 0;
+		private TimeSpan virtualTime = new TimeSpan(0);
 		private IEventRepository eventRepository;
 		private TimeRankingVisualiser rankingVisualiser;
 		private TimelineVisualiser timelineVisualiser;

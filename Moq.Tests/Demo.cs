@@ -46,7 +46,7 @@ namespace Moq.Tests
 
 			//verify
 			Assert.False(order.IsFilled);
-			Assert.True(performanceContext.TimeTaken < 610, $"Expected performance less than 610ms, but got average performance: {performanceContext.TimeTaken}");
+			Assert.True(performanceContext.TimeTaken.TotalMilliseconds < 610, $"Expected performance less than 610ms, but got average performance: {performanceContext.TimeTaken}");
 		}
 
 		[Fact]

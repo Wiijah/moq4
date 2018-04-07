@@ -27,7 +27,7 @@ namespace Moq.Performance
 		/// </summary>
 		/// <param name="setup"></param>
 		/// <param name="timeTaken"></param>
-		void AddTo(IWith setup, long timeTaken);
+		void AddTo(IWith setup, TimeSpan timeTaken);
 
 		/// <summary>
 		/// 
@@ -61,6 +61,6 @@ namespace Moq.Performance
 		/// <summary>
 		/// 
 		/// </summary>
-		long TimeTaken { get; }
+		TimeSpan TimeTaken { get; }
 	}
 }
