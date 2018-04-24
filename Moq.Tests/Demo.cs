@@ -3,6 +3,7 @@ using System.Threading;
 using Moq.Performance;
 using Moq.Performance.PerformanceModels;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Moq.Tests
 {
@@ -10,6 +11,13 @@ namespace Moq.Tests
 	{
 		private static string TALISKER = "Talisker";
 
+		private ITestOutputHelper output;
+
+		public Demo(ITestOutputHelper output)
+		{
+			this.output = output;
+		}
+		
 		[Fact]
 		public void FillingRemovesInventoryIfInStock()
 		{
@@ -64,6 +72,31 @@ namespace Moq.Tests
 			// Now the presenter reacted to the event, and we have a selected order
 			Assert.NotNull(presenter.SelectedOrder);
 			Assert.Equal("moq", presenter.SelectedOrder.ProductName);
+		}
+
+		[Fact]
+		public void TestFillPerformance()
+		{
+			var performanceContext = new PerformanceContext();
+			var order1 = new Order("TALISKER", 20);
+			var order2 = new Order("TALISKER", 20);
+
+			var mock = new Mock<IWarehouse>(performanceContext, MockBehavior.Default);
+			mock.Setup(w => w.HasInventory("TALISKER", 20)).With(new GaussianDistributionPerformanceModel(1000, 1)).Returns(true);
+			mock.Setup(w => w.Remove("TALISKER", 20)).With(new UniformDistributionPerformanceModel(500, 700));
+
+			performanceContext.Run(() =>
+			{
+				order1.Fill(mock.Object);
+				order2.Fill(mock.Object);
+
+			});
+			
+			output.WriteLine(performanceContext.TimeRankingVisualisation());
+			output.WriteLine("\n\n");
+			output.WriteLine(performanceContext.TimelineVisualisation());
+
+			Assert.True(performanceContext.TimeTaken < new TimeSpan(0, 0, 0, 5));
 		}
 
 		public class OrderEventArgs : EventArgs

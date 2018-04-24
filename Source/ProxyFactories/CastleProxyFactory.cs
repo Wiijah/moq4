@@ -96,6 +96,9 @@ namespace Moq
 		/// <inheritdoc />
 		public override object CreateProxy(Type mockType, Moq.IInterceptor interceptor, Type[] interfaces, object[] arguments)
 		{
+			var mock = interceptor as Mock;
+			mock?.PerformanceContext?.StopTimer();
+			
 			if (mockType.GetTypeInfo().IsInterface)
 			{
 				// While `CreateClassProxy` could also be used for interface types,

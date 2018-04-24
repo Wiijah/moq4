@@ -37,9 +37,11 @@ namespace Moq.Performance
 		/// <param name="performanceTest"></param>
 		public void Run(Action performanceTest)
 		{
+			this.eventRepository.AddEvent(new TestStartEvent(DateTime.Now));
 			timer.Start();
 			performanceTest.Invoke();
 			timer?.Stop();
+			this.eventRepository.AddEvent(new TestStopEvent(DateTime.Now + virtualTime));
 
 			TimeTaken = timer.Elapsed + virtualTime;
 		}
@@ -77,13 +79,13 @@ namespace Moq.Performance
 			};
 			setup.EndInvocation += (_, __) =>
 			{
-				virtualTime += timeTaken;
-				
 				eventRepository.AddEvent(
 					new SetupCalledEvent(
-						DateTime.Now + virtualTime, 
-						setup, 
+						DateTime.Now + virtualTime,
+						setup,
 						timeTaken));
+					
+				virtualTime += timeTaken;
 			};
 		}
 
@@ -103,13 +105,15 @@ namespace Moq.Performance
 				if (timer.IsRunning) timer.Stop();
 				
 				var time = model.DrawTime();
-				virtualTime += new TimeSpan(0, 0, 0, 0, (int) time);
-				
+								
 				eventRepository.AddEvent(
 					new SetupCalledEvent(
 						DateTime.Now + virtualTime, 
 						setup, 
 						new TimeSpan(0, 0, 0, 0, (int) time)));
+				
+				virtualTime += new TimeSpan(0, 0, 0, 0, (int) time);
+
 			};
 		}
 

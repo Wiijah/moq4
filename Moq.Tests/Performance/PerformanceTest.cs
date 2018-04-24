@@ -20,8 +20,8 @@ namespace Moq.Tests.Performance
 		[Fact]
 		public void PerformanceMatchesReality()
 		{
-			IPerformanceModel testModel = new ConstantPerformanceModel(1000);
-			IPerformanceModel realModel = new ConstantPerformanceModel(1000);
+			IPerformanceModel testModel = new ConstantPerformanceModel(200);
+			IPerformanceModel realModel = new ConstantPerformanceModel(200);
 			
 			IPerformanceContext performanceContext = new PerformanceContext();
 			

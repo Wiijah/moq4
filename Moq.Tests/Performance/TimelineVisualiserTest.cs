@@ -36,11 +36,11 @@ namespace Moq.Tests.Performance
 			var result = visualiser.Visualise();
 
 			
-			var expectedResult = String.Format("0----------------------------------------1------------------------------------------------------------2\r\n\r\n" +
-			                                   "0 : {0}\r\n" +
-			                                   "1 : {1}\r\n" +
-				                               "2 : {0}\r\n",
-				setup1.Object, setup2.Object);
+			var expectedResult = String.Format("00---------------------------------------111111-------------------------------------------------------2\r\n\r\n" +
+			                                   "0 : {0} at {2}\r\n" +
+			                                   "1 : {1} at {3}\r\n" +
+				                               "2 : {0} at {4}\r\n",
+				setup1.Object, setup2.Object, time.TimeOfDay, (time + new TimeSpan(0, 0, 0, 0, 40)).TimeOfDay, (time + new TimeSpan(0, 0, 0, 0, 100)).TimeOfDay);
 			Assert.Equal(expectedResult, result);
 		}
 	}

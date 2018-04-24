@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 
 namespace Moq.Performance.Visualisation.Visualisers
@@ -28,6 +29,8 @@ namespace Moq.Performance.Visualisation.Visualisers
 				orderby ev.TimeStamp
 				select ev;
 
+			if (events.Count() < 2) return "Something went wrong with the visualisation";
+			
 			var min = events.First().TimeStamp;
 			var max = events.Last().TimeStamp;
 			var span = max - min;
@@ -44,13 +47,27 @@ namespace Moq.Performance.Visualisation.Visualisers
 			{
 				var ev = events.ElementAt(i);
 				var space = scale * (ev.TimeStamp - prev.TimeStamp).TotalMilliseconds / span.TotalMilliseconds;
-				prev = ev;
+
+				int j;
+				double subLength = 0;
+
+				if (prev is SetupCalledEvent setupEvent)
+				{
+					subLength = scale * setupEvent.Duration.TotalMilliseconds / span.TotalMilliseconds;
+				}
 				
-				for (int j = 0; j < space; j++)
+				for (j = 0; j < subLength; j++)
+				{
+					var ch = (prev is SetupCalledEvent) ? $"{index-1}"[0] : '-';
+					sb.Append(ch);
+				}
+
+				for (; j < space; j++)
 				{
 					sb.Append("-");
 				}
-
+				
+				prev = ev;
 				sb.Append($"{index++}");
 			}
 
@@ -60,7 +77,7 @@ namespace Moq.Performance.Visualisation.Visualisers
 			index = 0;
 			foreach (var ev in events)
 			{
-				sb.AppendLine($"{index++} : {ev}");
+				sb.AppendLine($"{index++} : {ev} at {ev.TimeStamp.TimeOfDay}");
 			}
 
 			return sb.ToString();

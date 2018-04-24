@@ -27,9 +27,9 @@ namespace Moq.Performance.Visualisation.Visualisers
 		{
 			var orderedSetups = (from ev in this.repository.GetEvents()
 				where ev is SetupCalledEvent
-				group ((SetupCalledEvent) ev).Duration.Milliseconds by ((SetupCalledEvent) ev).Setup
+				group ((SetupCalledEvent) ev).Duration.TotalMilliseconds by ((SetupCalledEvent) ev).Setup
 				into g
-				select new {Setup = g.Key, Duration = g.ToList().Sum()})
+				select new {Setup = g.Key, Duration = g.Sum()})
 				.OrderByDescending(setup => setup.Duration);
 			
 			StringBuilder sb = new StringBuilder("Setup rankings from most time taken to least time taken\n");
