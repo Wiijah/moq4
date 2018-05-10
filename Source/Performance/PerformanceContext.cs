@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Moq.Language.Flow;
 using Moq.Performance.PerformanceModels;
 using Moq.Performance.Visualisation;
@@ -37,6 +39,7 @@ namespace Moq.Performance
 		/// <param name="performanceTest"></param>
 		public void Run(Action performanceTest)
 		{
+			this.taskId = Task.CurrentId;
 			this.eventRepository.AddEvent(new TestStartEvent(DateTime.Now));
 			timer.Start();
 			performanceTest.Invoke();
@@ -118,6 +121,32 @@ namespace Moq.Performance
 		}
 
 		/// <inheritdoc />
+		public void AddTo(IWith setup, TimeSpan timeTaken, Func<IWith, bool> isRelevantWhenOnOtherThread)
+		{
+			setup.StartInvocation += (_, __) => { timer.Stop(); };
+			setup.EndInvocation += (_, __) =>
+			{
+				if (Task.CurrentId == taskId || isRelevantWhenOnOtherThread(setup) && Task.CurrentId != taskId)
+				{
+					virtualTime += timeTaken;
+				}
+			};
+		}
+
+		/// <inheritdoc />
+		public void AddTo(IWith setup, IPerformanceModel model, Func<IWith, bool> isRelevantWhenOnOtherThread)
+		{
+			setup.StartInvocation += (_, __) => { timer.Stop(); };
+			setup.EndInvocation += (_, __) =>
+			{
+				if (Task.CurrentId == taskId || isRelevantWhenOnOtherThread(setup) && Task.CurrentId != taskId)
+				{
+					virtualTime += new TimeSpan(0, 0, 0, 0, (int) model.DrawTime());
+				}
+			};
+		}
+
+		/// <inheritdoc />
 		public string TimeRankingVisualisation()
 		{
 			return rankingVisualiser.Visualise();
@@ -146,5 +175,6 @@ namespace Moq.Performance
 		private IEventRepository eventRepository;
 		private TimeRankingVisualiser rankingVisualiser;
 		private TimelineVisualiser timelineVisualiser;
+		private int? taskId;
 	}
 }

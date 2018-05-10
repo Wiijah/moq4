@@ -90,6 +90,16 @@ namespace Moq
 		{
 			this.Mock.PerformanceContext?.AddTo(this, model);
 		}
+		
+		public void With(TimeSpan time, Func<IWith, bool> isRelevantWhenOnOtherThread)
+		{
+			this.Mock.PerformanceContext?.AddTo(this, time, isRelevantWhenOnOtherThread);
+		}
+
+		public void With(IPerformanceModel model, Func<IWith, bool> isRelevantWhenOnOtherThread)
+		{
+			this.Mock.PerformanceContext?.AddTo(this, model, isRelevantWhenOnOtherThread);
+		}
 	}
 
 	internal partial class MethodCall : ICallbackResult, IVerifies, IThrowsResult

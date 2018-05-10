@@ -41,6 +41,20 @@ namespace Moq.Language.Flow
 		/// <param name="model"></param>
 		/// <returns></returns>
 		IReturnsThrows<TMock, TResult> With(IPerformanceModel model);
+
+		/// <summary>
+		/// </summary>
+		/// <param name="time"></param>
+		/// <param name="isRelevantWhenOnOtherThread"></param>
+		/// <returns></returns>
+		IReturnsThrows<TMock, TResult> With(TimeSpan time, Func<IWith, bool> isRelevantWhenOnOtherThread);
+
+		/// <summary>
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="isRelevantWhenOnOtherThread"></param>
+		/// <returns></returns>
+		IReturnsThrows<TMock, TResult> With(IPerformanceModel model, Func<IWith, bool> isRelevantWhenOnOtherThread);
 	}
 
 	/// <summary>
@@ -61,5 +75,17 @@ namespace Moq.Language.Flow
 		/// </summary>
 		/// <param name="model"></param>
 		void With(IPerformanceModel model);
+
+		/// <summary>
+		/// </summary>
+		/// <param name="time"></param>
+		/// <param name="isRelevantWhenOnOtherThread"></param>
+		void With(TimeSpan time, Func<IWith, bool> isRelevantWhenOnOtherThread);
+
+		/// <summary>
+		/// </summary>
+		/// <param name="model"></param>
+		/// <param name="isRelevantWhenOnOtherThread"></param>
+		void With(IPerformanceModel model, Func<IWith, bool> isRelevantWhenOnOtherThread);
 	}
 }

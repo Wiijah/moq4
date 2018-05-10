@@ -105,6 +105,18 @@ namespace Moq
 			return this;
 		}
 
+		public IReturnsThrows<TMock, TResult> With(TimeSpan time, Func<IWith, bool> isRelevantWhenOnOtherThread)
+		{
+			this.Mock.PerformanceContext.AddTo(this, time, isRelevantWhenOnOtherThread);
+			return this;
+		}
+		
+		public IReturnsThrows<TMock, TResult> With(IPerformanceModel model, Func<IWith, bool> isRelevantWhenOnOtherThread)
+		{
+			this.Mock.PerformanceContext.AddTo(this, model, isRelevantWhenOnOtherThread);
+			return this;
+		}
+
 		public IReturnsResult<TMock> Returns(Delegate valueFunction)
 		{
 			// If `TResult` is `Delegate`, that is someone is setting up the return value of a method

@@ -37,6 +37,20 @@ namespace Moq.Performance
 		void AddTo(IWith setup, IPerformanceModel model);
 
 		/// <summary>
+		/// </summary>
+		/// <param name="setup"></param>
+		/// <param name="timeTaken"></param>
+		/// <param name="isRelevantWhenOnOtherThread"></param>
+		void AddTo(IWith setup, TimeSpan timeTaken, Func<IWith, bool> isRelevantWhenOnOtherThread);
+
+		/// <summary>
+		/// </summary>
+		/// <param name="setup"></param>
+		/// <param name="model"></param>
+		/// <param name="isRelevantWhenOnOtherThread"></param>
+		void AddTo(IWith setup, IPerformanceModel model, Func<IWith, bool> isRelevantWhenOnOtherThread);
+
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
