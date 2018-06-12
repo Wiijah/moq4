@@ -32,7 +32,7 @@ namespace Moq.Performance.PerformanceModels
 				r = random.NextDouble();
 			}
 
-			return -Math.Log(r)/Rate;
+			return -Math.Log(r) / Rate;
 		}
 
 		private readonly Random random;

@@ -1,14 +1,26 @@
 ﻿using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq.Performance;
 using Moq.Performance.PerformanceModels;
+using MySql.Data.MySqlClient;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Moq.Tests.Performance
 {
 	public class Demo
 	{
+		private ITestOutputHelper output;
+
+		public Demo(ITestOutputHelper output)
+		{
+			this.output = output;
+		}
+		
 		[Fact]
 		public void TestMultithreading()
 		{
@@ -25,6 +37,70 @@ namespace Moq.Tests.Performance
 			
 			Assert.True(perCont.TimeTaken.TotalMilliseconds > 29999 && perCont.TimeTaken.TotalMilliseconds < 30005, $"{perCont.TimeTaken.TotalMilliseconds}");
 			
+		}
+
+		[Fact]
+		public void TestQueryPerfNormal()
+		{
+			var query = new DbQuery();
+			var timer = Stopwatch.StartNew();
+			
+			this.QueryFunction(query, 1000);
+			timer.Stop();
+			
+			output.WriteLine(timer.Elapsed.ToString());
+			Assert.True(timer.Elapsed < new TimeSpan(0, 2, 0));
+		}
+
+		[Fact]
+		public void TestQueryPerfFramework()
+		{
+			var performanceContext = new PerformanceContext();
+			var mockDbQuery = new Mock<IDbQuery>(performanceContext, MockBehavior.Default);
+			
+			mockDbQuery.Setup(q => q.Query(It.IsAny<MySqlConnection>())).With(new TimeSpan(0, 0, 0, 0, 650));
+			performanceContext.Run(() =>
+			{
+				this.QueryFunction(mockDbQuery.Object, 1000);
+			});
+			
+			output.WriteLine(performanceContext.TimeTaken.ToString());
+			
+			Assert.True(performanceContext.TimeTaken < new TimeSpan(0, 2, 0));
+		}
+
+		private void QueryFunction(IDbQuery query, int number)
+		{
+			string connectionString = "Server=localhost;Database=user_accounts;Uid=root;Pwd=root;";
+			using (MySqlConnection conn = new MySqlConnection(connectionString))
+			{
+				conn.Open();
+				for (int i = 0; i < number; i++) query.Query(conn);
+				conn.Close();
+			}
+		}
+
+		public interface IDbQuery
+		{
+			void Query(MySqlConnection conn);
+		}
+
+		private class DbQuery : IDbQuery
+		{
+			public void Query(MySqlConnection conn)
+			{
+				string queryString = "SELECT * FROM accounts ORDER BY name;";
+
+				var sqlCommand = new MySqlCommand(queryString, conn);
+				var reader = sqlCommand.ExecuteReader();
+
+				while (reader.Read())
+				{
+			
+				}
+				reader.Close();
+				
+			}
 		}
 		
 		private class ClassUnderTest
