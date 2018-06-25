@@ -101,28 +101,28 @@ namespace Moq.Performance.Assertions
 		/// <summary>
 		/// 
 		/// </summary>
-		public class PercentileCondition
-		{
-			/// <summary>
-			/// 
-			/// </summary>
-			/// <param name="condition"></param>
-			public PercentileCondition(Func<TimeSpan, bool> condition)
+			public class PercentileCondition
 			{
-				this.condition = condition;
+				/// <summary>
+				/// 
+				/// </summary>
+				/// <param name="condition"></param>
+				public PercentileCondition(Func<TimeSpan, bool> condition)
+				{
+					this.condition = condition;
+				}
+	
+				/// <summary>
+				/// 
+				/// </summary>
+				/// <param name="perc"></param>
+				/// <returns></returns>
+				public bool Check(TimeSpan perc)
+				{
+					return condition(perc);
+				}
+				
+				private readonly Func<TimeSpan, bool> condition;
 			}
-
-			/// <summary>
-			/// 
-			/// </summary>
-			/// <param name="perc"></param>
-			/// <returns></returns>
-			public bool Check(TimeSpan perc)
-			{
-				return condition(perc);
-			}
-			
-			private readonly Func<TimeSpan, bool> condition;
-		}
 	}
 }

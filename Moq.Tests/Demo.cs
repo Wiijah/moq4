@@ -42,19 +42,19 @@ namespace Moq.Tests
 		{
 			//setup - data
 			var order = new Order(TALISKER, 50);
-			var mock = new Mock<IWarehouse>();
 			var performanceContext = new PerformanceContext();
+			var mock = new Mock<IWarehouse>(performanceContext, MockBehavior.Default);
 			
 			//setup - expectations
-			mock.Setup(x => x.HasInventory(It.IsAny<string>(), It.IsInRange(0, 100, Range.Inclusive))).With(new ConstantPerformanceModel(500)).Returns(false);
+			mock.Setup(x => x.HasInventory(It.IsAny<string>(), It.IsInRange(0, 100, Range.Inclusive))).With(new TimeSpan(0, 0, 0, 0, 400)).Returns(false);
 			mock.Setup(x => x.Remove(It.IsAny<string>(), It.IsAny<int>())).Throws(new InvalidOperationException());
 
 			//exercise
-			performanceContext.Run(() => order.Fill(mock.Object), 100);
+			performanceContext.Run(() => order.Fill(mock.Object));
 
 			//verify
 			Assert.False(order.IsFilled);
-			Assert.True(performanceContext.TimeTaken.TotalMilliseconds < 610, $"Expected performance less than 610ms, but got average performance: {performanceContext.TimeTaken}");
+			Assert.True(performanceContext.TimeTaken < new TimeSpan(0, 0, 0, 0, 450));
 		}
 
 		[Fact]
